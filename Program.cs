@@ -17,7 +17,7 @@ builder.Services.AddDbContext<IdentityContext>(options =>
     options.UseMySql(connectionString, version);
 });
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+builder.Services.AddIdentity<AppUser, AppRole>()
     .AddEntityFrameworkStores<IdentityContext>();
 
 builder.Services.Configure<IdentityOptions>(options =>

@@ -16,6 +16,7 @@ namespace IdentityApp.ViewModels
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Parolalar eşleşmiyor.")]
         public string? ConfirmPassword { get; set; }
+        public IList<string>? SelectedRoles { get; set; }
     }
 
 }

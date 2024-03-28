@@ -8,14 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<IdentityContext>(options =>
-{
-    var config = builder.Configuration;
-    var connectionString = config.GetConnectionString("mysql_connection");
-    //options.UseSqlite(connectionString);
-    var version = new MySqlServerVersion(new Version(8, 2, 0));
-    options.UseMySql(connectionString, version);
-});
+builder.Services.AddDbContext<IdentityContext>(
+    options => options.UseSqlite(builder.Configuration["ConnectionStrings:SQLite_Connection"]));
 
 builder.Services.AddIdentity<AppUser, AppRole>()
     .AddEntityFrameworkStores<IdentityContext>();

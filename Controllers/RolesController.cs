@@ -86,5 +86,16 @@ namespace IdentityApp.Controllers
             }
             return View(role);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role != null)
+            {
+                var result = await _roleManager.DeleteAsync(role);
+            }
+            return RedirectToAction("Index");
+        }
     }
 }

@@ -23,8 +23,10 @@
             <td>@role.Name</td>
             <td asp-role-users="@role.Id"></td>
             <td>
-                <form method="post">
-                    <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@role.Id">Edit</a>
+                <a class="btn btn-primary btn-sm" asp-action="Edit" asp-route-id="@role.Id">Edit</a>
+                <form asp-action="Delete" method="post" onsubmit="return confirm('Kaydı silmek istediğinize emin misiniz?')"
+                    style="display: inline-block;">
+                    <input type="hidden" value="@role.Id" name="id" />
                     <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                 </form>
             </td>

@@ -9,11 +9,13 @@ namespace IdentityApp.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IEmailSender _emailSender;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailSender = emailSender;
         }
         public IActionResult Login()
         {
@@ -82,13 +84,14 @@ namespace IdentityApp.Controllers
                     FullName = model.FullName
                 };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                IdentityResult result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token });
+                    var url = Url.Action("ConfirmEmail", "Account", new { user.Id, token });
 
+                    await _emailSender.SendEmailAsync(user.Email, "Hesabınızı Onaylayın", $"Lütfen e-mail hesabınızı onaylamak için linke <a href='http://localhost:5066{url}'>tıklayınız</a>");
                     TempData["message"] = "Email hesabınızdaki onay mailine tıklayınız";
                     return RedirectToAction("Login", "Account");
                 }
@@ -103,27 +106,26 @@ namespace IdentityApp.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        public async Task<IActionResult> ConfirmEmail(string Id, string token)
         {
-            if (userId == null || token == null)
+            if (Id == null || token == null)
             {
                 TempData["message"] = "Geçersiz token bilgisi";
                 return View();
             }
 
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(Id);
             if (user != null)
             {
                 var result = await _userManager.ConfirmEmailAsync(user, token);
                 if (result.Succeeded)
                 {
                     TempData["message"] = "Hesabınız onaylandı";
-                    return View("Login", "Account");
+                    return RedirectToAction("Login", "Account");
                 }
             }
             TempData["message"] = "Kullanıcı Bulunamadı";
             return View();
         }
-
     }
 }

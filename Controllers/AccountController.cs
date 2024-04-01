@@ -133,5 +133,34 @@ namespace IdentityApp.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
+
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["message"] = "Email alanı boş bırakılamaz";
+                return View();
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                TempData["message"] = "Kullanıcı bulunamadı";
+                return View();
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var url = Url.Action("ResetPassword", "Account", new { user.Id, token });
+
+            await _emailSender.SendEmailAsync(email, "Şifre Sıfırlama", $"Şifrenizi sıfırlamak için linke <a href='http://localhost:5066{url}'>tıklayınız</a>");
+            TempData["message"] = "Şifre sıfırlama maili gönderildi";
+            return View();
+        }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")] //Roles kısmına birden fazla rol girilebilir. Örnek: [Authorize(Roles = "admin,editor")]
     public class RolesController : Controller
     {
         private readonly RoleManager<AppRole> _roleManager;
@@ -15,7 +15,8 @@ namespace IdentityApp.Controllers
             _roleManager = roleManager;
             _userManager = userManager;
         }
-
+        //[AllowAnonymous] sadece admin erişimi olan bir controller'daki bir method'a herhangi bir user'ın erişimini sağlar. Tam tersi de geçerlidir.
+        //Controller'ın başına bu etiket yazılıp herhangi bir method'a sadece admin erişimi verilebilir.
         public IActionResult Index()
         {
             return View(_roleManager.Roles);

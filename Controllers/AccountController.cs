@@ -127,5 +127,11 @@ namespace IdentityApp.Controllers
             TempData["message"] = "Kullanıcı Bulunamadı";
             return View();
         }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Login");
+        }
     }
 }
